@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+div {
+  position: absolute;
+}
+#scroller {
+  width: 400px;
+  height: 400px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  padding: 0px;
+}
+.area {
+  width: 200px;
+  height: 200px;
+  background-color: blue;
+}
+#space {
+  top: 0px;
+  left: 0px;
+  width: 2000px;
+  height: 2000px;
+}
+#origin {
+  scroll-snap-align: start;
+  top: 0px;
+  left: 0px;
+}
+#start {
+  scroll-snap-align: start;
+  top: 200px;
+  left: 200px;
+}
+#center {
+  scroll-snap-align: center;
+  top: 900px;
+  left: 900px;
+}
+#end {
+  scroll-snap-align: end;
+  top: 1600px;
+  left: 1600px;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div class="area" id="origin"></div>
+  <div class="area" id="start"></div>
+  <div class="area" id="center"></div>
+  <div class="area" id="end"></div>
+</div>
+
+<script>
+var scroller = document.getElementById("scroller");
+test(() => {
+  scroller.scrollTo(0, 0);
+  assert_equals(scroller.scrollLeft, 0);
+  assert_equals(scroller.scrollTop, 0);
+  document.getElementById("start").scrollIntoView();
+  assert_equals(scroller.scrollLeft, 200);
+  assert_equals(scroller.scrollTop, 200);
+}, "scrollIntoView snaps when the element has scroll-snap-align: start");
+
+test(() => {
+  scroller.scrollTo(0, 0);
+  assert_equals(scroller.scrollLeft, 0);
+  assert_equals(scroller.scrollTop, 0);
+  document.getElementById("center").scrollIntoView();
+  assert_approx_equals(scroller.scrollLeft, 1000 - scroller.clientWidth / 2, 1);
+  assert_approx_equals(scroller.scrollTop, 1000 - scroller.clientHeight / 2, 1);
+}, "scrollIntoView snaps when the element has scroll-snap-align: center");
+
+test(() => {
+  scroller.scrollTo(0, 0);
+  assert_equals(scroller.scrollLeft, 0);
+  assert_equals(scroller.scrollTop, 0);
+  document.getElementById("end").scrollIntoView();
+  assert_equals(scroller.scrollLeft, 1800 - scroller.clientWidth);
+  assert_equals(scroller.scrollTop, 1800 - scroller.clientHeight);
+}, "scrollIntoView snaps when the element has scroll-snap-align: end");
+</script>
