@@ -139,7 +139,6 @@ backgroundFetchTest(async (test, backgroundFetch) => {
   assert_equals(results.length, 1);
 
   assert_equals(eventRegistration.id, registration.id);
-  assert_equals(eventRegistration.state, 'success');
   assert_equals(eventRegistration.failureReason, '');
 
   for (const result of results) {
@@ -171,3 +170,17 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
   assert_false(registration.recordsAvailable);
 }, 'recordsAvailable is false after onbackgroundfetchsuccess finishes execution.');
+
+backgroundFetchTest(async (test, backgroundFetch) => {
+
+  const registration = await backgroundFetch.fetch(
+                         'my-id',
+                         ['https://example.com', 'http://example.com']);
+
+  const {type, eventRegistration, results} = await getMessageFromServiceWorker();
+  assert_equals('backgroundfetchfail', type);
+  assert_equals(results.length, 0);
+
+  assert_equals(eventRegistration.id, registration.id);
+  assert_equals(eventRegistration.failureReason, 'fetch-error');
+}, 'Fetches with mixed content should fail.');

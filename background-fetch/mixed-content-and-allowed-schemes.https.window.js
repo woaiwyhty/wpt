@@ -47,19 +47,6 @@ backgroundFetchTest((t, bgFetch) => {
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
-                         bgFetch.fetch(uniqueId(), ['https://example.com',
-                                                    'http://example.com']));
-}, 'https: and non-loopback http: fetch should reject');
-
-backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(t, new TypeError(),
-                         bgFetch.fetch(uniqueId(), ['http://example.com',
-                                                    'https://example.com']));
-}, 'non-loopback http: and https: fetch should reject');
-
-
-backgroundFetchTest((t, bgFetch) => {
-  return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'wss:127.0.0.1'));
 }, 'wss: fetch should reject');
 
@@ -77,3 +64,4 @@ backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'foobar:bazqux'));
 }, 'unknown scheme fetch should reject');
+
