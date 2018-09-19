@@ -171,3 +171,27 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
   assert_false(registration.recordsAvailable);
 }, 'recordsAvailable is false after onbackgroundfetchsuccess finishes execution.');
+
+backgroundFetchTest(async (test, backgroundFetch) => {
+  const registrationId = uniqueId();
+  const registration =
+    await backgroundFetch.fetch(registrationId, 'resources/missing-cat.txt');
+
+  assert_equals(registration.id, registrationId);
+  assert_equals(registration.result, '');
+  assert_equals(registration.failureReason, '');
+
+  const {type, eventRegistration, results} = await getMessageFromServiceWorker();
+  assert_equals(type, 'backgroundfetchfail');
+  assert_equals(results.length, 1);
+  for (const result of results) {
+    assert_true(result.url.includes('resources/missing-cat.txt'));
+    assert_equals(result.status, 404);
+    assert_equals(result.text, '');
+  }
+
+  assert_equals(eventRegistration.id, registration.id);
+  assert_equals(eventRegistration.result, 'failure');
+  assert_equals(eventRegistration.failureReason, 'bad-status');
+
+}, 'Using Background Fetch to fetch a non-existent resource should fail.');
